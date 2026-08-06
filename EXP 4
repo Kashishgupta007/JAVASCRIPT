@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palindrome Checker</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Enter text to check</h2>
+
+        <input type="text" id="text-input" placeholder="Enter text">
+
+        <div class="btn-row">
+            <button onclick="checkPalindrome()">
+                Check palindrome
+            </button>
+
+            <span class="info">
+                Ignores spaces and punctuation, and compares case-insensitively.
+            </span>
+        </div>
+
+        <div id="result" class="result">
+            Enter a word above.
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
+function normalize(text) {
+    return text
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+}
+
+function isPalindrome(text) {
+
+    const cleaned = normalize(text);
+
+    const reversed = cleaned
+        .split("")
+        .reverse()
+        .join("");
+
+    return cleaned === reversed;
+}
+
+function checkPalindrome() {
+
+    try {
+
+        const input = document.getElementById("text-input").value;
+
+        if (input.trim() === "") {
+            throw "Please enter some text.";
+        }
+
+        const result = document.getElementById("result");
+
+        if (isPalindrome(input)) {
+
+            result.className = "result success";
+            result.innerHTML =
+                '<i class="fa-solid fa-circle-check"></i> Palindrome';
+
+        } else {
+
+            result.className = "result fail";
+            result.innerHTML =
+                '<i class="fa-solid fa-circle-xmark"></i> Not a palindrome';
+        }
+
+    }
+
+    catch(error){
+
+        alert(error);
+
+    }
+
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    width: 720px;
+    background: white;
+    padding: 22px;
+    border: 1px solid #ddd;
+    border-radius: 14px;
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 18px;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    margin-bottom: 15px;
+}
+
+input:focus {
+    border-color: #222;
+}
+
+.btn-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+button {
+    background: #111;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 17px;
+    transition: .3s;
+}
+
+button:hover {
+    background: #333;
+}
+
+.info {
+    color: #555;
+    font-size: 15px;
+}
+
+.result {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 18px;
+    font-size: 24px;
+}
+
+.success {
+    color: #16a34a;
+}
+
+.fail {
+    color: #ef4444;
+}
