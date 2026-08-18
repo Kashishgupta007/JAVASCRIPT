@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experiment 6 - String Functions & Regex</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #ffffff;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        textarea {
+            height: 110px;
+            resize: vertical;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-row input {
+            flex: 1;
+        }
+
+        button {
+            background: #4285df;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2868bd;
+        }
+
+        .result {
+            margin-top: 10px;
+            padding: 14px;
+            background: #f5f6f7;
+            border-left: 4px solid #4285df;
+            min-height: 60px;
+        }
+
+        .success {
+            background: #e7f8ef;
+            border-left-color: #25b96f;
+            color: #208c58;
+        }
+
+        .error {
+            background: #fdeaea;
+            border-left-color: #d93025;
+            color: #b3261e;
+        }
+
+        .report {
+            margin-top: 12px;
+            padding: 15px;
+            background: #f7f7f7;
+            line-height: 1.7;
+            white-space: normal;
+        }
+
+        .report strong {
+            color: #333;
+        }
+
+        .analysis {
+            margin-top: 20px;
+            background: #f7f7f7;
+            padding: 15px;
+        }
+
+        @media (max-width: 750px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>String Functions and Regular Expressions</h1>
+
+    <!-- EMAIL VALIDATION -->
+    <div class="section">
+        <h2>1. Email Validation</h2>
+
+        <p>
+            Checks string validity using literal trimming and strict pattern matching.
+        </p>
+
+        <div class="input-row">
+            <input
+                type="text"
+                id="emailInput"
+                value="kashish35@gmail.com"
+                placeholder="Enter email address"
+            >
+
+            <button onclick="validateEmail()">Validate</button>
+        </div>
+
+        <div id="emailResult" class="result"></div>
+    </div>
+
+
+    <!-- DATA EXTRACTION -->
+    <div class="section">
+
+        <h2>2. Data Extraction</h2>
+
+        <p>
+            Extracts all valid emails, system dates (YYYY-MM-DD), and ticket IDs
+            (#123) from messy text.
+        </p>
+
+        <div class="grid">
+
+            <!-- LEFT SIDE -->
+            <div>
+                <textarea id="textInput">2007-01-31</textarea>
+
+                <br><br>
+
+                <button onclick="extractMetadata()">
+                    Extract Metadata
+                </button>
+
+                <div id="leftReport" class="report">
+                    ### Extraction Report ###
+                </div>
+            </div>
+
+
+            <!-- RIGHT SIDE -->
+            <div>
+
+                <textarea id="sampleText">Email 1: office@example.com
+Phone 1: 555-0199
+Phone 2: +1-123-456-7890
+Message: Please call or email us today.</textarea>
+
+                <br><br>
+
+                <button onclick="extractSampleData()">
+                    Extract Metadata
+                </button>
+
+                <div id="rightReport" class="report">
+                    ### Extraction Report ###
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- TEXT ANALYSIS -->
+    <div class="section">
+
+        <h2>3. Text Analysis</h2>
+
+        <textarea id="analysisText"
+            placeholder="Enter text for analysis...">Hello! This is a JavaScript Regex experiment.</textarea>
+
+        <br><br>
+
+        <button onclick="analyzeText()">Analyze Text</button>
+
+        <div id="analysisResult" class="analysis"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // ---------------------------------------------------
+    // 1. EMAIL VALIDATION
+    // ---------------------------------------------------
+
+    function validateEmail() {
+
+        const email = document
+            .getElementById("emailInput")
+            .value
+            .trim();
+
+        const pattern =
+            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        const result = document.getElementById("emailResult");
+
+        if (pattern.test(email)) {
+
+            result.className = "result success";
+
+            result.textContent =
+                `Valid Email format: "${email}"`;
+
+        } else {
+
+            result.className = "result error";
+
+            result.textContent =
+                `Invalid Email format: "${email}"`;
+        }
+    }
+
+
+    // ---------------------------------------------------
+    // 2. DATA EXTRACTION
+    // ---------------------------------------------------
+
+    function extractMetadata() {
+
+        const text =
+            document.getElementById("textInput").value;
+
+        // Email pattern
+        const emailRegex =
+            /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+
+        // Date pattern YYYY-MM-DD
+        const dateRegex =
+            /\b\d{4}-\d{2}-\d{2}\b/g;
+
+        // Ticket ID pattern #123
+        const ticketRegex =
+            /#\d+/g;
+
+        const emails =
+            text.match(emailRegex) || [];
+
+        const dates =
+            text.match(dateRegex) || [];
+
+        const tickets =
+            text.match(ticketRegex) || [];
+
+        document.getElementById("leftReport").innerHTML = `
+            <strong>### Extraction Report ###</strong><br><br>
+
+            Emails Found (${emails.length}):
+            ${emails.length ? emails.join(", ") : "None"}
+            <br>
+
+            Dates Found (${dates.length}):
+            ${dates.length ? dates.join(", ") : "None"}
+            <br>
+
+            Ticket IDs Found (${tickets.length}):
+            ${tickets.length ? tickets.join(", ") : "None"}
+        `;
+    }
+
+
+    // ---------------------------------------------------
+    // SAMPLE DATA EXTRACTION
+    // ---------------------------------------------------
+
+    function extractSampleData() {
+
+        const text =
+            document.getElementById("sampleText").value;
+
+        const emailRegex =
+            /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+
+        const phoneRegex =
+            /(?:\+\d{1,3}[-.\s]?)?\d{3}[-.\s]\d{3}[-.\s]\d{4}/g;
+
+        const wordRegex =
+            /\b[A-Za-z]+\b/g;
+
+        const emails =
+            text.match(emailRegex) || [];
+
+        const phones =
+            text.match(phoneRegex) || [];
+
+        const words =
+            text.match(wordRegex) || [];
+
+        document.getElementById("rightReport").innerHTML = `
+            <strong>### Extraction Report ###</strong>
+            <br><br>
+
+            📧 <strong>Emails Found (${emails.length}):</strong><br>
+            ${emails.length ? emails.join("<br>") : "None"}
+
+            <br><br>
+
+            📞 <strong>Phone Numbers Found (${phones.length}):</strong><br>
+            ${phones.length ? phones.join("<br>") : "None"}
+
+            <br><br>
+
+            🔤 <strong>Total Parsed Text Words (${words.length}):</strong><br>
+            ${words.slice(0, 8).map(word => `"${word}"`).join(", ")}
+            ${words.length > 8 ? ` ... [+${words.length - 8} more words]` : ""}
+        `;
+    }
+
+
+    // ---------------------------------------------------
+    // 3. TEXT ANALYSIS
+    // ---------------------------------------------------
+
+    function analyzeText() {
+
+        const text =
+            document.getElementById("analysisText").value;
+
+        const trimmedText =
+            text.trim();
+
+        // Number of characters
+        const characters =
+            trimmedText.length;
+
+        // Number of words
+        const words =
+            trimmedText.match(/\b\w+\b/g) || [];
+
+        // Number of sentences
+        const sentences =
+            trimmedText.match(/[.!?]+/g) || [];
+
+        // Number of vowels
+        const vowels =
+            trimmedText.match(/[aeiou]/gi) || [];
+
+        // Number of digits
+        const digits =
+            trimmedText.match(/\d/g) || [];
+
+        // Uppercase
+        const uppercase =
+            trimmedText.toUpperCase();
+
+        // Lowercase
+        const lowercase =
+            trimmedText.toLowerCase();
+
+        document.getElementById("analysisResult").innerHTML = `
+            <strong>Text Analysis Report</strong>
+            <br><br>
+
+            Number of Characters:
+            ${characters}
+            <br>
+
+            Number of Words:
+            ${words.length}
+            <br>
+
+            Number of Sentences:
+            ${sentences.length}
+            <br>
+
+            Number of Vowels:
+            ${vowels.length}
+            <br>
+
+            Number of Digits:
+            ${digits.length}
+            <br><br>
+
+            <strong>Uppercase Version:</strong><br>
+            ${uppercase}
+            <br><br>
+
+            <strong>Lowercase Version:</strong><br>
+            ${lowercase}
+        `;
+    }
+
+
+    // ---------------------------------------------------
+    // DEFAULT OUTPUT
+    // ---------------------------------------------------
+
+    validateEmail();
+    extractMetadata();
+    extractSampleData();
+    analyzeText();
+
+</script>
+
+</body>
+</html>
